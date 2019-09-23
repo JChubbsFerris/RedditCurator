@@ -1,8 +1,6 @@
 #! python3
 
 import praw
-#import panda
-#import datetime
 
 import requests
 

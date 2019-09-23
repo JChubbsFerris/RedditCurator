@@ -1,0 +1,51 @@
+#:kivy 1.11.1
+
+<ReaderBase>:
+	canvas.before:
+		Color:
+			rgba: 1, 1, 1, 1
+		Rectangle:
+			pos: self.pos
+			size: self.size
+
+<PostManager>:
+	size_hint: 0.8, 0.95
+	pos_hint: {'x':0.2, 'y':0.025}
+	padding: 10, 10, 0, 10
+	spacing: 10
+
+	canvas.before:
+		Color:
+			rgba: .4, 0, .4, 1
+		Rectangle:
+			pos: self.pos
+			size: self.size
+
+
+<PostDisplay>:
+	pos: root.x, root.y
+	size: root.width, root.height
+	
+	titleLabel: title
+	thumbImage: thumbnail
+
+	canvas.before:
+		Color:
+			rgba: .6, 0, .6, 1
+		Rectangle:
+			pos: self.x, self.y
+			size: self.width, self.height
+
+	AsyncImage:
+		id: thumbnail
+		pos: root.x, root.center_y - self.height / 2
+
+
+	Label:
+		id: title
+		pos: root.x + root.width / 2, root.y - self.height / 12
+		valign: 'top'
+		text_size: root.width * .90, root.height
+		color: 0, 0, 0, 1
+		font_size: 20
+		max_lines: 5
