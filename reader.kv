@@ -11,8 +11,6 @@
 <PostManager>:
 	size_hint: 0.8, 0.95
 	pos_hint: {'x':0.2, 'y':0.025}
-	padding: 10, 10, 0, 10
-	spacing: 10
 
 	canvas.before:
 		Color:
@@ -21,13 +19,33 @@
 			pos: self.pos
 			size: self.size
 
+	viewclass: 'PostDisplay'
+	effect_cls: "ScrollEffect"
+    
+    scroll_type: ['bars']
+    bar_width: 25
+    bar_color: 1, 0, 0, 1
+
+    data: self.rv_data
+
+	RecycleBoxLayout:
+		default_size: None, dp(56)
+	    default_size_hint: 1, None
+	    size_hint_y: None
+	    height: self.minimum_height
+	    orientation: 'vertical'
+	    padding: 10, 10, 0, 10
+	    spacing: 10
 
 <PostDisplay>:
 	pos: root.x, root.y
 	size: root.width, root.height
 	
-	titleLabel: title
-	thumbImage: thumbnail
+	titleText: ''
+	scoreText: ''
+	authText: ''
+	subText: ''
+	thumbSource: ''
 
 	canvas.before:
 		Color:
@@ -38,14 +56,62 @@
 
 	AsyncImage:
 		id: thumbnail
+		source: root.thumbSource	
 		pos: root.x, root.center_y - self.height / 2
-
+		size: (0, 0) if self.source == '' else (root.height * self.image_ratio, root.height)
+		opacity: 0 if self.source == '' else 1
+		halign: 'left'
 
 	Label:
 		id: title
-		pos: root.x + root.width / 2, root.y - self.height / 12
+		text: root.titleText
+		text_size: root.width - thumbnail.width, root.height
+		size: self.text_size
+		pos: root.x + thumbnail.width, root.y
 		valign: 'top'
-		text_size: root.width * .90, root.height
+		halign: 'left'
+		padding: 5, 0
 		color: 0, 0, 0, 1
-		font_size: 20
-		max_lines: 5
+		font_size: 15
+		max_lines: 3	
+
+	Label:
+		id: score
+		text: root.scoreText
+		size: self.texture_size
+		pos: root.x + thumbnail.width + 2, root.y + 2
+		valign: 'top'
+		color: 0, 0, .6, 1
+		font_size: 10
+
+	Image:
+		id: upArrow
+		pos: score.x + score.width + 2, root.y + 2
+		size: self.height * self.image_ratio, score.height
+		source: 'resources/upArrow.png'
+
+	Image:
+		id: downArrow
+		pos: upArrow.x + upArrow.width, root.y + 2
+		size: self.height * self.image_ratio, score.height
+		source: 'resources/downArrow.png'
+
+	Label:
+		id: author
+		text: root.authText
+		size: self.texture_size
+		pos: downArrow.x + downArrow.width + 2, root.y + 2
+		valign: 'top'
+
+		color: 0, 0, 0, 1
+		font_size: 10
+
+	Label:
+		id: sub
+		text: root.subText
+		size: self.texture_size
+		pos: author.x + author.width + 2, root.y + 2
+		valign: 'top'
+
+		color: 0, 0, 0, 1
+		font_size: 10
