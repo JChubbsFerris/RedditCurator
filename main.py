@@ -18,61 +18,33 @@ import redditScraping as rs
 
 class PostDisplay(Widget):
 	pass
-'''
-	titleLabel = ObjectProperty()
-	scoreLabel = ObjectProperty()
-	authLabel = ObjectProperty()
-	subLabel = ObjectProperty()
-	thumbImage = ObjectProperty()
-
-	def __init__(self, post):
-		super(PostDisplay, self).__init__()
-
-		self.post = post
-		#self.buildDisplay()
-
-	def buildDisplay(self):
-		#title
-		#self.titleLabel.text = self.post.title
-
-		#score
-		#self.scoreLabel.text = str(self.post.score)
-
-		#author
-		#self.authLabel.text = self.post.author.name
-
-		#subreddit
-		#self.subLabel.text = "on r/" + self.post.subreddit.display_name
-
-
-		#thumbnail
-		thumb = self.post.thumbnail
-		if 'https' in thumb:
-			self.thumbImage.source = self.post.thumbnail
-		else:
-			self.thumbImage.source = None
-			self.thumbImage.opacity = 0
-
-		prod = {'title': {'text': self.post.title}, 'score': {'text': (self.post.score)}, 'author': {'text': self.post.author.name}}
-
-		return prod'''
 
 class PostManager(RecycleView):
 	layout = ObjectProperty()
 	rv_data = ListProperty()
 
-	def __init__(self):
+	currSub = "all"
+
+	def __init__(self, scraper):
 		super(PostManager, self).__init__()
 
 		self.posts = []
-		self.postDisplays = []
+		self.scraper = scraper
+		self.subreddit = self.scraper.reddit.subreddit(self.currSub)
+		self.currPost = iter(self.subreddit.hot(limit=None))
+
+		#generate initial 50 posts
+		self.generatePosts(50)
+
+	def generatePosts(self, postN):
+		for i in range(postN):
+			self.addPost(next(self.currPost))
 
 	def addPost(self, post):
 		self.posts.append(post)
 		self.addPostDisplay(post)
 
 	def addPostDisplay(self, post):
-		self.postDisplays.append(post)
 		newDisplay = {}
 		newDisplay['titleText'] = post.title
 		newDisplay['scoreText'] = str(post.score)
@@ -95,22 +67,12 @@ class ReaderBase(FloatLayout):
 		super(ReaderBase, self).__init__()
 
 		self.scraper = rs.Scraper()
-		self.postManager = PostManager()
+		self.postManager = PostManager(self.scraper)
 		self.add_widget(self.postManager)
-
-		self.generatePosts()
-
-	def generatePosts(self):
-		subreddit = self.scraper.reddit.subreddit("all")
-		displayCount = 100
-
-		for i in subreddit.hot(limit=displayCount):
-			self.postManager.addPost(i)
 
 class ReaderApp(App):
 	def build(self):
 		reader = ReaderBase()
-
 		return reader
 
 if __name__ == '__main__':
